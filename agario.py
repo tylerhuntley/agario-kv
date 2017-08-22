@@ -9,42 +9,6 @@ from kivy.core.window import Window
 from random import randint, random
 from math import sqrt
 
-   
-Builder.load_string(
-''' #:kivy 1.10.0
-
-<Cell>:    
-    size: self.size
-    
-    canvas:
-        Color:
-            rgb: 0,0,1
-        Ellipse:
-            pos: self.x-self.diameter/2, self.y-self.diameter/2
-            size: self.diameter, self.diameter
-    Label:
-        center: self.parent.pos
-        text: str(self.parent.mass)
-
-<Food>:
-    canvas:
-        Color:
-            rgb:  self.color
-        Ellipse:
-            pos: self.x-5, self.y-5
-            size: 10,10
-      
-<Field>:
-    player: player
-    food: food
-        
-    Cell:
-        id: player
-
-    Food:
-        id: food
-''')
-
 
 class Cell(Widget):
     
@@ -126,7 +90,7 @@ class Field(Widget):
 ##            self.player.velocity_x *= -1
    
 
-class App(App):
+class MainApp(App):
     def build(self):        
         field = Field()
         field.spawn_player()
@@ -137,4 +101,4 @@ class App(App):
 
 
 if __name__ == '__main__': 
-    App().run()
+    MainApp().run()

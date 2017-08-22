@@ -1,0 +1,32 @@
+#:kivy 1.10.0
+
+<Cell>:
+    size: self.size
+
+    canvas:
+        Color:
+            rgb: 0,0,1
+        Ellipse:
+            pos: self.x-self.diameter/2, self.y-self.diameter/2
+            size: self.diameter, self.diameter
+    Label:
+        center: self.parent.pos
+        text: str(self.parent.mass)
+
+<Food>:
+    canvas:
+        Color:
+            rgb:  self.color
+        Ellipse:
+            pos: self.x-5, self.y-5
+            size: 10,10
+
+<Field>:
+    player: player
+    food: food
+
+    Cell:
+        id: player
+
+    Food:
+        id: food
