@@ -61,6 +61,7 @@ class Field(Widget):
     
     def __init__(self, **kwargs):
         super(Field, self).__init__(**kwargs)
+        self.size = (800, 800)
         self.food = []
 
     def spawn_player(self):
@@ -75,14 +76,12 @@ class Field(Widget):
 ##            with self.food[-1].canvas:
 ##                Color(1,0,0,mode='rgb')
 ##                Ellipse(pos=spawn, size=(5,5))
-            
     
     def update(self, dt):
         self.player.move()
         for morsel in self.food:
             if self.player.can_eat(morsel):
                 self.player.eat(morsel)
-
         
 ##        if (self.player.y < 0) or (self.player.top > self.height):
 ##            self.player.velocity_y *= -1
@@ -91,13 +90,14 @@ class Field(Widget):
    
 
 class MainApp(App):
-    def build(self):        
+    def build(self):
+        root = Widget()
         field = Field()
+        root.add_widget(field)
         field.spawn_player()
         Clock.schedule_interval(field.spawn_food, 1/5)
         Clock.schedule_interval(field.update, 1.0/60.0)
-        return field
-
+        return root
 
 
 if __name__ == '__main__': 

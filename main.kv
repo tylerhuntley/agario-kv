@@ -5,7 +5,7 @@
 
     canvas:
         Color:
-            rgb: 0,0,1
+            rgb: 0, 0, 1
         Ellipse:
             pos: self.x-self.diameter/2, self.y-self.diameter/2
             size: self.diameter, self.diameter
@@ -16,17 +16,36 @@
 <Food>:
     canvas:
         Color:
-            rgb:  self.color
+            rgb: self.color
         Ellipse:
             pos: self.x-5, self.y-5
-            size: 10,10
+            size: 10, 10
 
 <Field>:
     player: player
     food: food
+
+    canvas:
+        Color:
+            rgb: 1, 1, 1
+        Line:
+            points: 0,0, 0,self.height, self.width,self.height, self.width,0, 0,0
+            width: 5
 
     Cell:
         id: player
 
     Food:
         id: food
+
+
+
+
+
+
+
+
+
+
+
+
