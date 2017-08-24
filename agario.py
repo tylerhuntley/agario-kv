@@ -41,6 +41,10 @@ class Cell(Widget):
             self.velocity *= (self.dest-self.pos).length()/self.diameter
         self.pos = Vector(*self.velocity) + self.pos
 
+        #Restrict cell movement to within field boundary
+        self.x = sorted([0, self.x, self.parent.width])[1]
+        self.y = sorted([0, self.y, self.parent.height])[1]
+
     def can_eat(self, food):
         return (Vector(food.pos)-self.pos).length() <= self.diameter/2
 
@@ -49,14 +53,15 @@ class Cell(Widget):
         self.parent.food.remove(morsel)
         self.parent.remove_widget(morsel)
 
+
 class Food(Widget):
     color = ListProperty([random(), random(), random()])
     def __init__(self, **kwargs):
         super(Food, self).__init__(**kwargs)
         self.color = random(), random(), random()
 
+
 class Field(Widget):
-    
     player = ObjectProperty(None)
     
     def __init__(self, **kwargs):
@@ -67,15 +72,15 @@ class Field(Widget):
     def spawn_player(self):
         self.player.pos = self.center
 
-    def spawn_food(self, _):
+    def spawn_food(self, dt):
         if len(self.food) < 100:
-            spawn = (randint(10,self.width-10), randint(10,self.height-10))
+            spawn = (randint(10, self.width-10), randint(10, self.height-10))
             self.food.append(Food(pos=spawn))
             self.add_widget(self.food[-1])
             
-##            with self.food[-1].canvas:
-##                Color(1,0,0,mode='rgb')
-##                Ellipse(pos=spawn, size=(5,5))
+           # with self.food[-1].canvas:
+           #     Color(1,0,0,mode='rgb')
+           #     Ellipse(pos=spawn, size=(5,5))
     
     def update(self, dt):
         self.player.move()
@@ -83,10 +88,10 @@ class Field(Widget):
             if self.player.can_eat(morsel):
                 self.player.eat(morsel)
         
-##        if (self.player.y < 0) or (self.player.top > self.height):
-##            self.player.velocity_y *= -1
-##        if (self.player.x < 0) or (self.player.right > self.width):
-##            self.player.velocity_x *= -1
+        # if (self.player.y < 0) or (self.player.top > self.height):
+        #     self.player.velocity_y *= -1
+        # if (self.player.x < 0) or (self.player.right > self.width):
+        #     self.player.velocity_x *= -1
    
 
 class MainApp(App):
