@@ -1,4 +1,5 @@
 #:kivy 1.10.0
+#:import Vector kivy.vector.Vector
 
 <Cell>:
     size: self.size
@@ -7,7 +8,7 @@
         Color:
             rgb: 0, 0, 1
         Ellipse:
-            pos: self.x-self.diameter/2, self.y-self.diameter/2
+            pos: Vector(self.offset) + self.pos - (self.diameter/2, self.diameter/2)
             size: self.diameter, self.diameter
     Label:
         center: self.parent.pos

@@ -1,7 +1,7 @@
 from kivy.app import App
 from kivy.lang import Builder
 from kivy.uix.widget import Widget
-from kivy.properties import NumericProperty, ListProperty, ObjectProperty
+from kivy.properties import NumericProperty, ListProperty, ObjectProperty, ReferenceListProperty
 from kivy.graphics import Ellipse, Color
 from kivy.vector import Vector
 from kivy.clock import Clock
@@ -14,6 +14,7 @@ class Cell(Widget):
     
     mass = NumericProperty(50)
     diameter = NumericProperty()
+    offset = ListProperty([0, 0])
 ##    speed = NumericProperty(250)
 ##    (v_x, v_y) = (NumericProperty(0), NumericProperty(0))
 ##    velocity = ReferenceListProperty(v_x, v_y)
@@ -22,10 +23,16 @@ class Cell(Widget):
         super(Cell, self).__init__(**kwargs)
         self.diameter = 5*sqrt(self.mass)
         self.size = (self.diameter, self.diameter)
+        self.bind(pos=self.shift_camera, size=self.shift_camera)
 
     @property
     def speed(self):
         return 5000/sqrt(self.mass)
+
+    def shift_camera(self, *args):
+        self.offset = (Window.width / 2 - self.x,
+                       Window.height / 2 - self.y)
+        self.parent.offset = self.offset
 
 ##    @property
 ##    def diameter(self):
@@ -35,7 +42,7 @@ class Cell(Widget):
         self.diameter = 5*sqrt(self.mass)
     
     def move(self):
-        self.dest = Vector(Window.mouse_pos)        
+        self.dest = Vector(Window.mouse_pos)
         self.velocity = (self.dest-self.pos).normalize()*self.speed/60
         if (self.dest-self.pos).length() < self.diameter:
             self.velocity *= (self.dest-self.pos).length()/self.diameter
@@ -56,18 +63,27 @@ class Cell(Widget):
 
 class Food(Widget):
     color = ListProperty([random(), random(), random()])
-    def __init__(self, **kwargs):
+    offset = ListProperty([0, 0])
+
+    def __init__(self, parent, **kwargs):
         super(Food, self).__init__(**kwargs)
+        parent.food.append(self)
+        self.offset = parent.offset
         self.color = random(), random(), random()
 
 
 class Field(Widget):
     player = ObjectProperty(None)
+    offset = ListProperty([0, 0])
     
     def __init__(self, **kwargs):
         super(Field, self).__init__(**kwargs)
         self.size = (800, 800)
         self.food = []
+
+    def on_offset(self, *args):
+        for item in self.food:
+            item.offset = self.offset
 
     def spawn_player(self):
         self.player.pos = self.center
@@ -75,8 +91,8 @@ class Field(Widget):
     def spawn_food(self, dt):
         if len(self.food) < 100:
             spawn = (randint(10, self.width-10), randint(10, self.height-10))
-            self.food.append(Food(pos=spawn))
-            self.add_widget(self.food[-1])
+            self.add_widget(Food(self, pos=spawn))
+            # self.add_widget(self.food[-1])
             
            # with self.food[-1].canvas:
            #     Color(1,0,0,mode='rgb')
