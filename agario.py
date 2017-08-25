@@ -42,7 +42,7 @@ class Cell(Widget):
         self.diameter = 5*sqrt(self.mass)
     
     def move(self):
-        self.dest = Vector(Window.mouse_pos)
+        self.dest = Vector(Window.mouse_pos) - self.offset
         self.velocity = (self.dest-self.pos).normalize()*self.speed/60
         if (self.dest-self.pos).length() < self.diameter:
             self.velocity *= (self.dest-self.pos).length()/self.diameter

@@ -11,7 +11,7 @@
             pos: Vector(self.offset) + self.pos - (self.diameter/2, self.diameter/2)
             size: self.diameter, self.diameter
     Label:
-        center: self.parent.pos
+        center: Vector(root.offset) + root.pos
         text: str(self.parent.mass)
 
 <Food>:
