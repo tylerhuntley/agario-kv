@@ -75,6 +75,7 @@ class Food(Widget):
 class Field(Widget):
     player = ObjectProperty(None)
     offset = ListProperty([0, 0])
+    border = ListProperty()
     
     def __init__(self, **kwargs):
         super(Field, self).__init__(**kwargs)
@@ -82,6 +83,10 @@ class Field(Widget):
         self.food = []
 
     def on_offset(self, *args):
+        (x, y) = self.offset
+        self.border_x = [x, x, self.width+x, self.width+x]
+        self.border_y = [y, self.height+y, self.height+y, y]
+        self.border = zip(self.border_x, self.border_y)
         for item in self.food:
             item.offset = self.offset
 

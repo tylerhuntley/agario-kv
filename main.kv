@@ -19,7 +19,7 @@
         Color:
             rgb: self.color
         Ellipse:
-            pos: self.x-5, self.y-5
+            pos: Vector(self.offset) + self.pos - (5,5)
             size: 10, 10
 
 <Field>:
@@ -29,7 +29,8 @@
         Color:
             rgb: 1, 1, 1
         Line:
-            points: 0,0, 0,self.height, self.width,self.height, self.width,0, 0,0
+            points: self.border
+            close: True
 
     Cell:
         id: player
