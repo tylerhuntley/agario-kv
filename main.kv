@@ -17,8 +17,16 @@
         Color:
             rgb: self.color
         Ellipse:
-            pos: Vector(self.offset) + self.pos - (5,5)
+            pos: Vector(self.offset) + self.pos - (5, 5)
             size: 10, 10
+
+<Blob>:
+    canvas:
+        Color:
+            rgb: self.color
+        Ellipse:
+            pos: Vector(self.offset) + self.pos - (10, 10)
+            size: 20, 20
 
 <Field>:
     player: player

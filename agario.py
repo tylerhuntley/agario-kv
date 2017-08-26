@@ -50,9 +50,18 @@ class Cell(Widget):
         return (Vector(food.pos)-self.pos).length() <= self.radius
 
     def eat(self, morsel):
-        self.mass += 10
-        self.parent.food.remove(morsel)
-        self.parent.remove_widget(morsel)
+        if isinstance(morsel, Food):
+            self.mass += morsel.mass
+            self.parent.food.remove(morsel)
+            self.parent.remove_widget(morsel)
+        elif isinstance(morsel, Cell):
+            pass
+
+    def on_touch_down(self, touch):
+        if self.mass >= 50:
+            self.mass -= 10
+            blob_pos = Vector(touch.x, touch.y) - self.offset
+            self.parent.add_widget(Blob(self.parent, pos=blob_pos))
 
 
 class Food(Widget):
@@ -62,9 +71,12 @@ class Food(Widget):
     def __init__(self, parent, **kwargs):
         super(Food, self).__init__(**kwargs)
         parent.food.append(self)
+        self.mass = 10
         self.offset = parent.offset
         self.color = uniform(.2, .8), uniform(.2, .8), uniform(.2, .8)
 
+class Blob(Food):
+    pass
 
 class Field(Widget):
     player = ObjectProperty(None)
