@@ -1,12 +1,10 @@
 from kivy.app import App
-from kivy.lang import Builder
 from kivy.uix.widget import Widget
-from kivy.properties import NumericProperty, ListProperty, ObjectProperty, ReferenceListProperty
-from kivy.graphics import Ellipse, Color
+from kivy.properties import NumericProperty, ListProperty, ObjectProperty
 from kivy.vector import Vector
 from kivy.clock import Clock
 from kivy.core.window import Window
-from random import randint, random
+from random import randint, uniform
 from math import sqrt
 
 
@@ -15,19 +13,19 @@ class Cell(Widget):
     mass = NumericProperty()
     diameter = NumericProperty()
     offset = ListProperty([0, 0])
-##    speed = NumericProperty(250)
-##    (v_x, v_y) = (NumericProperty(0), NumericProperty(0))
-##    velocity = ReferenceListProperty(v_x, v_y)
     
     def __init__(self, **kwargs):
         super(Cell, self).__init__(**kwargs)
         self.mass = 50
-        self.size = (self.diameter, self.diameter)
         self.bind(pos=self.shift_camera, size=self.shift_camera)
 
     @property
     def speed(self):
-        return 2000/(self.mass**0.3)
+        return 2000/(self.mass**0.33)
+
+    @property
+    def radius(self):
+        return self.diameter/2
 
     def shift_camera(self, *args):
         self.offset = (Window.width / 2 - self.x,
@@ -49,7 +47,7 @@ class Cell(Widget):
         self.y = sorted([0, self.y, self.parent.height])[1]
 
     def can_eat(self, food):
-        return (Vector(food.pos)-self.pos).length() <= self.diameter/2
+        return (Vector(food.pos)-self.pos).length() <= self.radius
 
     def eat(self, morsel):
         self.mass += 10
@@ -58,14 +56,14 @@ class Cell(Widget):
 
 
 class Food(Widget):
-    color = ListProperty([random(), random(), random()])
+    color = ListProperty([1,1,1])
     offset = ListProperty([0, 0])
 
     def __init__(self, parent, **kwargs):
         super(Food, self).__init__(**kwargs)
         parent.food.append(self)
         self.offset = parent.offset
-        self.color = random(), random(), random()
+        self.color = uniform(.2, .8), uniform(.2, .8), uniform(.2, .8)
 
 
 class Field(Widget):
@@ -93,22 +91,12 @@ class Field(Widget):
         if len(self.food) < 500:
             spawn = (randint(10, self.width-10), randint(10, self.height-10))
             self.add_widget(Food(self, pos=spawn))
-            # self.add_widget(self.food[-1])
-            
-           # with self.food[-1].canvas:
-           #     Color(1,0,0,mode='rgb')
-           #     Ellipse(pos=spawn, size=(5,5))
     
     def update(self, dt):
         self.player.move()
         for morsel in self.food:
             if self.player.can_eat(morsel):
                 self.player.eat(morsel)
-        
-        # if (self.player.y < 0) or (self.player.top > self.height):
-        #     self.player.velocity_y *= -1
-        # if (self.player.x < 0) or (self.player.right > self.width):
-        #     self.player.velocity_x *= -1
    
 
 class MainApp(App):
