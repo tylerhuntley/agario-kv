@@ -12,7 +12,7 @@ from math import sqrt
 
 class Cell(Widget):
     
-    mass = NumericProperty(50)
+    mass = NumericProperty()
     diameter = NumericProperty()
     offset = ListProperty([0, 0])
 ##    speed = NumericProperty(250)
@@ -21,25 +21,21 @@ class Cell(Widget):
     
     def __init__(self, **kwargs):
         super(Cell, self).__init__(**kwargs)
-        self.diameter = 5*sqrt(self.mass)
+        self.mass = 50
         self.size = (self.diameter, self.diameter)
         self.bind(pos=self.shift_camera, size=self.shift_camera)
 
     @property
     def speed(self):
-        return 5000/sqrt(self.mass)
+        return 2000/(self.mass**0.3)
 
     def shift_camera(self, *args):
         self.offset = (Window.width / 2 - self.x,
                        Window.height / 2 - self.y)
         self.parent.offset = self.offset
-
-##    @property
-##    def diameter(self):
-##        return 5*sqrt(self.mass)
         
     def on_mass(self, *args):
-        self.diameter = 5*sqrt(self.mass)
+        self.diameter = 7.5*sqrt(self.mass)
     
     def move(self):
         self.dest = Vector(Window.mouse_pos) - self.offset
@@ -79,7 +75,7 @@ class Field(Widget):
     
     def __init__(self, **kwargs):
         super(Field, self).__init__(**kwargs)
-        self.size = (800, 800)
+        self.size = (1200, 1200)
         self.food = []
 
     def on_offset(self, *args):
@@ -94,7 +90,7 @@ class Field(Widget):
         self.player.pos = self.center
 
     def spawn_food(self, dt):
-        if len(self.food) < 100:
+        if len(self.food) < 500:
             spawn = (randint(10, self.width-10), randint(10, self.height-10))
             self.add_widget(Food(self, pos=spawn))
             # self.add_widget(self.food[-1])
@@ -121,7 +117,7 @@ class MainApp(App):
         field = Field()
         root.add_widget(field)
         field.spawn_player()
-        Clock.schedule_interval(field.spawn_food, 1/5)
+        Clock.schedule_interval(field.spawn_food, 1/10)
         Clock.schedule_interval(field.update, 1.0/60.0)
         return root
 
