@@ -2,14 +2,12 @@
 #:import Vector kivy.vector.Vector
 
 <Cell>:
-    size: self.size
-
     canvas:
         Color:
             rgb: 0, 0, 1
         Ellipse:
             pos: Vector(self.offset) + self.pos - (self.radius, self.radius)
-            size: self.diameter, self.diameter
+            size: self.size
     Label:
         center: Vector(root.offset) + root.pos
         text: str(self.parent.mass)

@@ -11,7 +11,6 @@ from math import sqrt
 class Cell(Widget):
     
     mass = NumericProperty()
-    diameter = NumericProperty()
     offset = ListProperty([0, 0])
     
     def __init__(self, **kwargs):
@@ -25,7 +24,7 @@ class Cell(Widget):
 
     @property
     def radius(self):
-        return self.diameter/2
+        return self.width/2
 
     def shift_camera(self, *args):
         self.offset = (Window.width / 2 - self.x,
@@ -33,13 +32,14 @@ class Cell(Widget):
         self.parent.offset = self.offset
         
     def on_mass(self, *args):
-        self.diameter = 7.5*sqrt(self.mass)
+        diameter = 7.5*sqrt(self.mass)
+        self.size = (diameter, diameter)
     
     def move(self):
         self.dest = Vector(Window.mouse_pos) - self.offset
         self.velocity = (self.dest-self.pos).normalize()*self.speed/60
-        if (self.dest-self.pos).length() < self.diameter:
-            self.velocity *= (self.dest-self.pos).length()/self.diameter
+        if (self.dest-self.pos).length() < self.radius:
+            self.velocity *= (self.dest-self.pos).length()/self.radius
         self.pos = Vector(*self.velocity) + self.pos
 
         #Restrict cell movement to within field boundary
