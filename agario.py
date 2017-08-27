@@ -14,6 +14,7 @@ class Cell(Widget):
     offset = ListProperty([0, 0])
     
     def __init__(self, **kwargs):
+        Window.bind(on_key_down=self.key_handler)
         super(Cell, self).__init__(**kwargs)
         self.mass = 50
         self.bind(pos=self.shift_camera, size=self.shift_camera)
@@ -65,6 +66,15 @@ class Cell(Widget):
         self.mass -= 10
         blob_pos = Vector(x, y) - self.offset
         self.parent.add_widget(Blob(self.parent, pos=blob_pos))
+
+    def split(self):
+        pass
+
+    def key_handler(self, _, __, ___, key, ____):
+        if key == 'w':
+            self.eject_blob(*Window.mouse_pos)
+        elif key ==' ':
+            self.split()
 
 
 class Food(Widget):
