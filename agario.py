@@ -16,8 +16,23 @@ class Cell(Widget):
     def __init__(self, **kwargs):
         Window.bind(on_key_down=self.key_handler)
         super(Cell, self).__init__(**kwargs)
+        self.own_cells = [self]
         self.mass = 50
         self.bind(pos=self.shift_camera, size=self.shift_camera)
+
+    def key_handler(self, _, __, ___, key, ____):
+        if key == 'w':
+            self.eject_blob(*Window.mouse_pos)
+        elif key ==' ':
+            self.split()
+
+    def on_touch_down(self, touch):
+        self.eject_blob(touch.x, touch.y)
+
+    def shift_camera(self, *args):
+        self.offset = (Window.width / 2 - self.x,
+                       Window.height / 2 - self.y)
+        self.parent.offset = self.offset
 
     @property
     def speed(self):
@@ -26,21 +41,16 @@ class Cell(Widget):
     @property
     def radius(self):
         return self.width/2
-
-    def shift_camera(self, *args):
-        self.offset = (Window.width / 2 - self.x,
-                       Window.height / 2 - self.y)
-        self.parent.offset = self.offset
         
     def on_mass(self, *args):
         diameter = 7.5*sqrt(self.mass)
         self.size = (diameter, diameter)
     
     def move(self):
-        self.dest = Vector(Window.mouse_pos) - self.offset
-        self.velocity = (self.dest-self.pos).normalize()*self.speed/60
-        if (self.dest-self.pos).length() < self.radius:
-            self.velocity *= (self.dest-self.pos).length()/self.radius
+        destination = Vector(Window.mouse_pos) - self.offset
+        self.velocity = (destination-self.pos).normalize()*self.speed/60
+        if (destination-self.pos).length() < self.radius:
+            self.velocity *= (destination-self.pos).length()/self.radius
         self.pos = Vector(*self.velocity) + self.pos
 
         #Restrict cell movement to within field boundary
@@ -58,23 +68,14 @@ class Cell(Widget):
         elif isinstance(morsel, Cell):
             pass
 
-    def on_touch_down(self, touch):
-        if self.mass >= 50:
-            self.eject_blob(touch.x, touch.y)
-
     def eject_blob(self, x, y):
-        self.mass -= 10
-        blob_pos = Vector(x, y) - self.offset
-        self.parent.add_widget(Blob(self.parent, pos=blob_pos))
+        if self.mass >= 50:
+            self.mass -= 10
+            blob_pos = Vector(x, y) - self.offset
+            self.parent.add_widget(Blob(self.parent, pos=blob_pos))
 
     def split(self):
-        pass
-
-    def key_handler(self, _, __, ___, key, ____):
-        if key == 'w':
-            self.eject_blob(*Window.mouse_pos)
-        elif key ==' ':
-            self.split()
+        print("self.split()")
 
 
 class Food(Widget):
@@ -93,11 +94,13 @@ class Food(Widget):
     def radius(self):
         return self.width/2
 
+
 class Blob(Food):
     def __init__(self, parent, **kwargs):
         super(Blob, self).__init__(parent, **kwargs)
         self.mass = 10
         self.size = (25, 25)
+
 
 class Field(Widget):
     player = ObjectProperty(None)
