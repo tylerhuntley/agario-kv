@@ -47,7 +47,7 @@ class Cell(Widget):
         self.y = sorted([0, self.y, self.parent.height])[1]
 
     def can_eat(self, food):
-        return (Vector(food.pos)-self.pos).length() <= self.radius
+        return (Vector(food.pos)-self.pos).length() <= self.radius+food.radius
 
     def eat(self, morsel):
         if isinstance(morsel, Food):
@@ -59,9 +59,12 @@ class Cell(Widget):
 
     def on_touch_down(self, touch):
         if self.mass >= 50:
-            self.mass -= 10
-            blob_pos = Vector(touch.x, touch.y) - self.offset
-            self.parent.add_widget(Blob(self.parent, pos=blob_pos))
+            self.eject_blob(touch.x, touch.y)
+
+    def eject_blob(self, x, y):
+        self.mass -= 10
+        blob_pos = Vector(x, y) - self.offset
+        self.parent.add_widget(Blob(self.parent, pos=blob_pos))
 
 
 class Food(Widget):
@@ -71,12 +74,20 @@ class Food(Widget):
     def __init__(self, parent, **kwargs):
         super(Food, self).__init__(**kwargs)
         parent.food.append(self)
-        self.mass = 10
         self.offset = parent.offset
         self.color = uniform(.2, .8), uniform(.2, .8), uniform(.2, .8)
+        self.mass = 10
+        self.size = (10, 10)
+
+    @property
+    def radius(self):
+        return self.width/2
 
 class Blob(Food):
-    pass
+    def __init__(self, parent, **kwargs):
+        super(Blob, self).__init__(parent, **kwargs)
+        self.mass = 10
+        self.size = (25, 25)
 
 class Field(Widget):
     player = ObjectProperty(None)
