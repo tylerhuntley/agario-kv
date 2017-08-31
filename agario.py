@@ -23,8 +23,13 @@ class Cell(Widget):
     def key_handler(self, _, __, ___, key, ____):
         if key == 'w':
             self.eject_blob(*Window.mouse_pos)
-        elif key ==' ':
+        elif key == ' ':
             self.split()
+
+        #Temporary commands for testing
+        elif key == 'v':
+            pos = Vector(Window.mouse_pos) - self.offset
+            self.parent.add_widget(Virus(self.parent, pos=pos))
 
     def on_touch_down(self, touch):
         self.eject_blob(touch.x, touch.y)
@@ -100,6 +105,14 @@ class Blob(Food):
         super(Blob, self).__init__(parent, **kwargs)
         self.mass = 10
         self.size = (25, 25)
+
+
+class Virus(Food):
+    def __init__(self, parent, **kwargs):
+        super(Virus, self).__init__(parent, **kwargs)
+        self.color = (0,1,0)
+        self.mass = 100
+        self.size = (50, 50)
 
 
 class Field(Widget):
